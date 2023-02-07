@@ -1,5 +1,5 @@
-
 import sys
+
 def verificarinicio(a: str):
     A = a.upper()
     b = "ROBOT_R"
@@ -38,29 +38,3 @@ def leerarchivotxt(nombreArchivo: str):
 
 leerarchivotxt("archivo")
 """
-Do = True
-
-def printMenu():
-    while Do:
-            
-        print("\n")
-        print("*******************************************")
-        print("Bienvenido")
-        
-        print("\n")
-        print("SELECCIONE UNA DE LAS SIGUIENTES OPCIONES")
-        print("\n")
-        print("1-INGRESAR TEXTO A ANALIZAR") #TO-DO Cargar archivo 
-        print("2- REQ 1 - OPCION ADICIONAL")
-        print("0- Salir")
-        option = input("Opcion a elegir: ")
-        if option == "1":
-            txt = input("Ingrese aquí el texto, de momento \n no se carga un archivo")
-            partido = txt.split(",")
-        elif option == "2":
-            print("Has elegido la segunda opción")
-            #entrada = input("entrada de prueba")
-        else:
-            Do == False
-    print("*******************************************")
-print(printMenu())

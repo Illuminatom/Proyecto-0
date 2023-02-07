@@ -108,4 +108,4 @@ def lexer(archivo: str):
 
     lexertxt.close()
 
-lexer("archivo")
+#lexer("archivo")
