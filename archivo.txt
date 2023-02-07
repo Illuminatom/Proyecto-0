@@ -6,7 +6,7 @@ put : c , chips ; put : b , balloons ]
 goNorth [| |
 while : canMovetoThe : 1 , north do: [ moveInDir : 1 , north ] od
 ]
-goWest [ | | i f : canMoveInDir : 1 , west then: [ MoveInDir : 1 ,
+goWest [ | | if : canMoveInDir : 1 , west then: [ MoveInDir : 1 ,
 west ] else : nop : ]
 [
 goTo : 3 , 3
