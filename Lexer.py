@@ -2,10 +2,12 @@ import os
 import random
 
 starters = ["ROBOT_R", "VARS", "PROCS"]
+directions = ["north", "south", "east", "west"]
+orientations = ["left", "right", "front", "back"]
+chipsOrballons = ["chips", "ballons"]
 twoParametersCommands = ["assignto" ,"goto", "put", "pick", "movetothe", "moveindir", "jumptothe", "jumpindir"]
 singleParameterCommands = ["move", "turn", "face"]
 specialCharacters = [":", "|", ";", "]", "[", ","]
-nop = "nop"
 conditionals = ["if", "else", "then"]
 loop = ["while", "do"]
 twoParametersConditions = ["canput", "canpick", "canmoveindir", "canjumpindir", "canmovetothe", "canjumptothe", "not"]
@@ -55,22 +57,64 @@ def convertirATokens(listPalabras: list, listTokens: list):
         if (palabra.upper() in starters) or (palabra.lower() in conditionals) or (palabra.lower() in loop):
             listTokens.append(palabra.upper())
         elif (palabra.lower() in twoParametersCommands):
-            listTokens.append("TwoParametersCommand")
+            if("p" in palabra.lower()[0]):
+                listTokens.append("TwoParametersCommand(n,X)")
+            elif ("moveto" in palabra) or ("jumpto" in palabra):
+                listTokens.append("TwoParametersCommand(n,O)")
+            elif ("goto" in palabra.lower()):
+                listTokens.append("TwoParametersCommand(n,n)")
+            elif ("assingto" in palabra.lower()):
+                listTokens.append("TwoParametersCommand(#,n)")
+            else:
+                listTokens.append("TwoParametersCommand(n,D)")
+
         elif (palabra.lower() in singleParameterCommands):
-            listTokens.append("SingleParameterCommand")
+            if("move" in palabra.lower()):
+                listTokens.append("SingleParameterCommand(n)")
+            if("turn" in palabra.lower()):
+                listTokens.append("SingleParameterCommand(O)")
+            if("face" in palabra.lower()):
+                listTokens.append("SingleParameterCommand(D)")
+
         elif (palabra.lower() in twoParametersConditions):
-            listTokens.append("TwoParametersCondition")
+            if("canp" in palabra.lower()):                                                  
+                listTokens.append("TwoParametersCondition(n,X)")                            
+            elif ("canmovein" in palabra.lower()) or ("canjumpin" in palabra.lower()):                  
+                listTokens.append("TwoParametersCondition(n,D)")                
+            else:               
+                listTokens.append("TwoParametersCondition(n,O)")   
+
         elif (palabra.lower() in singleParameterConditions):
-            listTokens.append("SingleParameterCondition")
+             if("facing" in palabra.lower()):
+                listTokens.append("SingleParameterCondition(D)")
+             if("not" in palabra.lower()):
+                listTokens.append("SingleParameterCondition(cond)")
+
+
         elif (palabra in specialCharacters):
             listTokens.append(palabra) 
+        
+        elif (palabra.lower() in directions):
+            listTokens.append("D")
+
+        elif (palabra.lower() in orientations):
+            listTokens.append("O")
+
+        elif (palabra.lower() == "nop"):
+            listTokens.append(palabra)
+
+        elif(palabra.lower() in chipsOrballons):
+            listTokens.append("X")
+        
+        elif (palabra.isnumeric()):
+            listTokens.append("#")
         else:
             nombres = definirNombresdeVariables(palabra)
             for nombre in nombres:
-                if nombre not in specialCharacters:
-                    listTokens.append("Name")
+                if (nombre not in specialCharacters) and (nombre.upper() not in starters) and (nombre.lower() not in conditionals) and (nombre.lower() not in loop) and (nombre.lower() not in twoParametersCommands) and (nombre.lower() not in twoParametersConditions) and (nombre.lower() not in singleParameterCommands) and (nombre.lower() not in singleParameterConditions):
+                    listTokens.append("n")
                 else:
-                    listTokens.append(nombre)
+                    convertirATokens([nombre], listTokens)
     
 
 def lexer(archivo: str):
@@ -102,10 +146,10 @@ def lexer(archivo: str):
 
     file.close()
 
-    lexertxt = open("lexer{0}.txt".format(random.randint(0, 1000)), "x")
+    lexertxt = open(archivo + "_lexer{0}.txt".format(random.randint(0, 1000)), "x")
 
     lexertxt.write(strTokens)
 
     lexertxt.close()
 
-#lexer("archivo")
+lexer("archivo")
