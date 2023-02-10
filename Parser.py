@@ -3,7 +3,7 @@ import Lexer
 archivoTokens = "ROBOT_R VARS n , n , n , n ; PROCS F(putcb) [ | n , n | TwoParametersCommand(#,n) : # , n ; TwoParametersCommand(n,X) : n , X ; TwoParametersCommand(n,X): n , n ] F(gonorth) [ | | WHILE : TwoParametersCondition(n,O) : # , D DO : [ TwoParametersCommand(n,D) : # , D ] n ] F(gowest) [ | | IF : TwoParametersCondition(n,D) : # , D THEN : [ TwoParametersCommand(n,D) : # , D ] ELSE : nop : ] [ TwoParametersCommand(n,n) : # , # F(putcb) : # , n ]"
 
 archivoTokensLista = archivoTokens.split()
-
+#
 def validCommandCall(command: str):
     None
 
