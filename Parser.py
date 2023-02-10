@@ -4,7 +4,10 @@ archivoTokens = "ROBOT_R VARS n , n , n , n ; PROCS F(putcb) [ | n , n | TwoPara
 
 archivoTokensLista = archivoTokens.split()
 
-def definirNumVariablesDePROC(cadenaTokenizada: str):
+def validCommandCall(command: str):
+    None
+
+def posicionPROCS(cadenaTokenizada: str):
     listTokens = cadenaTokenizada.split()
     i = 0
     dictFunciones = {}
@@ -15,8 +18,14 @@ def definirNumVariablesDePROC(cadenaTokenizada: str):
         dictFunciones[i] = 0
         posicionesFunciones.append(i)
       i += 1
-      
-    i = 0
+    
+    return [dictFunciones, posicionesFunciones]
+
+def definirNumVariablesDePROC(cadenaTokenizada: str):
+    listTokens = cadenaTokenizada.split()
+
+    dictFunciones = posicionPROCS(cadenaTokenizada)[0]
+    posicionesFunciones = posicionPROCS(cadenaTokenizada)[1]
     
     while i <= len(posicionesFunciones)-1:
       listaVariables = listTokens[posicionesFunciones[i]:-1]
@@ -38,6 +47,17 @@ def definirNumVariablesDePROC(cadenaTokenizada: str):
 
       return dictFunciones
      
+def validPROCS(cadenaTokenizada: str):
+    listTokens = cadenaTokenizada.split()
+    posicionesFunciones = posicionPROCS(cadenaTokenizada)
+    
+    if listTokens[posicionesFunciones[0]-1] != "PROCS":
+      return False
+
+    
+
+    
+    
 
 def validarVariables(cadena: str):
     listaVariables = cadena.split(",")
