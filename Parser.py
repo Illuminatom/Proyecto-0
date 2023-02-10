@@ -4,6 +4,41 @@ archivoTokens = "ROBOT_R VARS n , n , n , n ; PROCS F(putcb) [ | n , n | TwoPara
 
 archivoTokensLista = archivoTokens.split()
 
+def definirNumVariablesDePROC(cadenaTokenizada: str):
+    listTokens = cadenaTokenizada.split()
+    i = 0
+    dictFunciones = {}
+    posicionesFunciones = []
+
+    while i <= len(listTokens)-1:
+      if "F(" in listTokens[i] and (listTokens[i] not in dictFunciones.keys()):
+        dictFunciones[i] = 0
+        posicionesFunciones.append(i)
+      i += 1
+      
+    i = 0
+    
+    while i <= len(posicionesFunciones)-1:
+      listaVariables = listTokens[posicionesFunciones[i]:-1]
+      contadorLineas = 0
+      index = 0
+
+      while index <= len(listaVariables)-1:
+        if listaVariables[index] == "|" and (contadorLineas < 2):
+          contadorLineas +=1
+        elif listaVariables[index] == "n":
+          dictFunciones[listTokens[posicionesFunciones[i]]] += 1
+        elif contadorLineas == 2:
+            index = len(listaVariables)-1
+        
+        index += 1
+
+      
+      i += 1
+
+      return dictFunciones
+     
+
 def validarVariables(cadena: str):
     listaVariables = cadena.split(",")
     retorno = True
