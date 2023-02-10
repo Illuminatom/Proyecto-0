@@ -36,6 +36,8 @@ def definirNombresdeVariables(var: str):
     if (esEspecial(var) == False):
         if(var.isalnum()) and (var[0].isalpha()):
             retorno.append(var)
+        else:
+            return ["ERROR"]
     else:
         for char in var:
             if (esEspecial(char)):
@@ -138,8 +140,8 @@ def convertirATokens(listPalabras: list, listTokens: list, listPROCS: list):
         else:
             nombres = definirNombresdeVariables(palabra)
             for nombre in nombres:
-                if (nombre not in specialCharacters) and (nombre.upper() not in starters) and (nombre.lower() not in conditionals) and (nombre.lower() not in loop) and (nombre.lower() not in twoParametersCommands) and (nombre.lower() not in twoParametersConditions) and (nombre.lower() not in singleParameterCommands) and (nombre.lower() not in singleParameterConditions):
-                    listTokens.append("n")
+                if (nombre not in specialCharacters) and (nombre.upper() not in starters) and (nombre.lower() not in conditionals) and (nombre.lower() not in loop) and (nombre.lower() not in twoParametersCommands) and (nombre.lower() not in twoParametersConditions) and (nombre.lower() not in singleParameterCommands) and (nombre.lower() not in singleParameterConditions) and (nombre.isnumeric() == False) and (palabra.lower() not in chipsOrballons):
+                    listTokens.append("n({})".format(nombre))
                 else:
                     convertirATokens([nombre], listTokens, listPROCS)
 

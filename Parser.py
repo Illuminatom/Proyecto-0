@@ -3,7 +3,7 @@ import Lexer
 archivoTokens = "ROBOT_R VARS n , n , n , n ; PROCS F(putcb) [ | n , n | TwoParametersCommand(#,n) : # , n ; TwoParametersCommand(n,X) : n , X ; TwoParametersCommand(n,X): n , n ] F(gonorth) [ | | WHILE : TwoParametersCondition(n,O) : # , D DO : [ TwoParametersCommand(n,D) : # , D ] n ] F(gowest) [ | | IF : TwoParametersCondition(n,D) : # , D THEN : [ TwoParametersCommand(n,D) : # , D ] ELSE : nop : ] [ TwoParametersCommand(n,n) : # , # F(putcb) : # , n ]"
 
 archivoTokensLista = archivoTokens.split()
-#
+
 def validCommandCall(command: str):
     None
 
@@ -15,7 +15,7 @@ def posicionPROCS(cadenaTokenizada: str):
 
     while i <= len(listTokens)-1:
       if "F(" in listTokens[i] and (listTokens[i] not in dictFunciones.keys()):
-        dictFunciones[i] = 0
+        dictFunciones[listTokens[i]] = 0
         posicionesFunciones.append(i)
       i += 1
     
@@ -49,22 +49,26 @@ def definirNumVariablesDePROC(cadenaTokenizada: str):
      
 def validPROCS(cadenaTokenizada: str):
     listTokens = cadenaTokenizada.split()
-    posicionesFunciones = posicionPROCS(cadenaTokenizada)
+    posicionesFunciones = posicionPROCS(cadenaTokenizada)[1]
     
     if listTokens[posicionesFunciones[0]-1] != "PROCS":
       return False
+    
+    funciones = []
+    subcadenas = []
 
-    
+    for posicion in posicionesFunciones:
+      subcadenas.append(listTokens[posicion+1: -1])
+      
 
-    
-    
+
 
 def validarVariables(cadena: str):
     listaVariables = cadena.split(",")
     retorno = True
 
     for var in listaVariables:
-      if (var != "n"):                # Si el token que representa las variables no es n o #, las variables estan mal
+      if ("n(" in var):                # Si el token que representa las variables no es n o #, las variables estan mal
         if (var != "#"):              # declaradas
           retorno = False
   
