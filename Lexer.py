@@ -28,29 +28,52 @@ def esEspecial(string: str):
 def definirNombresdeVariables(var: str):
     retorno = []
     nombre = ""
+    numeros = ""
 
     if len(var) == 0:
         var = " "
+        
+    if (esEspecial(var) == False):
+        if(var.isalnum()) and (var[0].isalpha()):
+            retorno.append(var)
+    else:
+        for char in var:
+            if (esEspecial(char)):
+                if nombre != "": retorno.append(nombre)
 
-    for char in var:
-        if (esEspecial(char)):
-            if nombre != "": retorno.append(nombre)
-            
-            retorno.append(char)            
-            
-            nombre = ""
-        elif (char.isalnum()):
-            nombre += char
-        else:
-            return "ERROR"
+                retorno.append(char)            
+
+                nombre = ""
+            elif (char.isalpha()):
+                nombre += char
+                if numeros != "": retorno.append(numeros)
+                numeros = ""
+
+            elif (char.isnumeric()):
+                numeros += char    
+            else:
+                return "ERROR"
 
     if nombre != "":
         retorno.append(nombre)
+    
+    if numeros != "":
+        retorno.append(numeros)
 
     return retorno
 
+def definirNombresPROCS(listaPalabras: list):
+	listaPROCS = []
+	i = 0 
+	while i <= len(listaPalabras)-2:
+		if listaPalabras[i][0].isalpha() and listaPalabras[i].isalnum():
+			if "[" in listaPalabras[i+1]:
+				listaPROCS.append(listaPalabras[i].lower())
+		i += 1
 
-def convertirATokens(listPalabras: list, listTokens: list):
+	return listaPROCS
+
+def convertirATokens(listPalabras: list, listTokens: list, listPROCS: list):
     """Toma cada palabra de listPalabras y le asigna un token dependiendo de cual sea la palabra para posteriormente
     guardar cada token en listTokens en el orden de entrada"""
     for palabra in listPalabras:
@@ -63,7 +86,7 @@ def convertirATokens(listPalabras: list, listTokens: list):
                 listTokens.append("TwoParametersCommand(n,O)")
             elif ("goto" in palabra.lower()):
                 listTokens.append("TwoParametersCommand(n,n)")
-            elif ("assingto" in palabra.lower()):
+            elif ("assignto" in palabra.lower()):
                 listTokens.append("TwoParametersCommand(#,n)")
             else:
                 listTokens.append("TwoParametersCommand(n,D)")
@@ -90,6 +113,8 @@ def convertirATokens(listPalabras: list, listTokens: list):
              if("not" in palabra.lower()):
                 listTokens.append("SingleParameterCondition(cond)")
 
+        elif (palabra.lower() in listPROCS):
+            listTokens.append("F({})".format(palabra.lower()))
 
         elif (palabra in specialCharacters):
             listTokens.append(palabra) 
@@ -108,19 +133,20 @@ def convertirATokens(listPalabras: list, listTokens: list):
         
         elif (palabra.isnumeric()):
             listTokens.append("#")
+
+        
         else:
             nombres = definirNombresdeVariables(palabra)
             for nombre in nombres:
                 if (nombre not in specialCharacters) and (nombre.upper() not in starters) and (nombre.lower() not in conditionals) and (nombre.lower() not in loop) and (nombre.lower() not in twoParametersCommands) and (nombre.lower() not in twoParametersConditions) and (nombre.lower() not in singleParameterCommands) and (nombre.lower() not in singleParameterConditions):
                     listTokens.append("n")
                 else:
-                    convertirATokens([nombre], listTokens)
-    
+                    convertirATokens([nombre], listTokens, listPROCS)
 
-def lexer(archivo: str):
+
+def crearListaPalabras(archivo: str):
     strLineas = ""
     listPalabras = []
-    listTokens = []
     nombreTxt = archivo+".txt"
     file = open(nombreTxt)
 
@@ -138,14 +164,25 @@ def lexer(archivo: str):
     listPalabras = strLineas.split()                     # Toma la cadena de caracteres anterior y la convierte
                                                          # en una lista cuyos elementos son todas las palabras
                                                          # omitiendo los espacios en blanco y las tabulaciones
+    
+    file.close()
+    
+    return listPalabras
 
-    convertirATokens(listPalabras, listTokens)
+    
+
+def lexer(archivo: str):
+    listTokens = []
+    listPalabras = crearListaPalabras(archivo)
+
+    listaPROCS = definirNombresPROCS(listPalabras)
+
+    convertirATokens(listPalabras, listTokens,listaPROCS)
     strTokens = " ".join(listTokens)
 
+
     print(strTokens)
-
-    file.close()
-
+    print(listaPROCS)
     lexertxt = open(archivo + "_lexer{0}.txt".format(random.randint(0, 1000)), "x")
 
     lexertxt.write(strTokens)
