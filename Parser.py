@@ -46,22 +46,55 @@ def definirNumVariablesDePROC(cadenaTokenizada: str):
       i += 1
 
       return dictFunciones
+
+def pasarFuncionesaString(cadenaTokenizada: str):
+
+    funciones = []
+    subcadenas = []
+
+    listTokens = cadenaTokenizada.split()
+    posicionesFunciones = posicionPROCS(cadenaTokenizada)[1]
+
+    for posicion in posicionesFunciones:
+      subcadenas.append(listTokens[posicion+1: -1])
+    
+    i = 0
+
+    for subcadena in subcadenas:
+      inicio = 0
+      final = 0
+
+      cantAbierto = 0
+      cantCerrado = 0
+
+      i = 0
+      while i <= len(subcadena)-1:
+        if subcadena[i] == "[":
+          cantAbierto += 1
+        elif subcadena[i] == "]":
+          cantCerrado += 1
+          final = i
+
+        if cantAbierto == cantCerrado:
+          funcion = subcadena[inicio: final+1]
+          funcion = " ".join(funcion)
+          funciones.append(funcion)
+          
+          i = len(subcadena)-1
+         
+        i += 1
+
+    return (funciones) 
+     
      
 def validPROCS(cadenaTokenizada: str):
     listTokens = cadenaTokenizada.split()
     posicionesFunciones = posicionPROCS(cadenaTokenizada)[1]
-    
+
     if listTokens[posicionesFunciones[0]-1] != "PROCS":
       return False
+
     
-    funciones = []
-    subcadenas = []
-
-    for posicion in posicionesFunciones:
-      subcadenas.append(listTokens[posicion+1: -1])
-      
-
-
 
 def validarVariables(cadena: str):
     listaVariables = cadena.split(",")
@@ -69,7 +102,7 @@ def validarVariables(cadena: str):
 
     for var in listaVariables:
       if ("n(" in var):                # Si el token que representa las variables no es n o #, las variables estan mal
-        if (var != "#"):              # declaradas
+        if (var != "#"):               # declaradas
           retorno = False
   
     return retorno
