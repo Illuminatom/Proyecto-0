@@ -1,11 +1,68 @@
 import Lexer
 
-archivoTokens = "ROBOT_R VARS n , n , n , n ; PROCS F(putcb) [ | n , n | TwoParametersCommand(#,n) : # , n ; TwoParametersCommand(n,X) : n , X ; TwoParametersCommand(n,X): n , n ] F(gonorth) [ | | WHILE : TwoParametersCondition(n,O) : # , D DO : [ TwoParametersCommand(n,D) : # , D ] n ] F(gowest) [ | | IF : TwoParametersCondition(n,D) : # , D THEN : [ TwoParametersCommand(n,D) : # , D ] ELSE : nop : ] [ TwoParametersCommand(n,n) : # , # F(putcb) : # , n ]"
+archivoTokens = "ROBOT_R VARS n(nom) , n(x) , n(y) , n(one) ; PROCS F(putcb) [ | n(c) , n(b) | TwoParametersCommand(#,n) : # , n(one) ; TwoParametersCommand(n,X) : n(c) , X ; TwoParametersCommand(n,X) : n(b) , X ] F(gonorth) [ | | WHILE : TwoParametersCondition(n,O) : # , D DO : [ TwoParametersCommand(n,D) : # , D ] ] F(gowest) [ | | IF : TwoParametersCondition(n,D) : # , D THEN : [ TwoParametersCommand(n,D) : # , D ] ELSE : nop : ] [ TwoParametersCommand(n,n) : # , # F(putcb) : # , # ]"
 
 archivoTokensLista = archivoTokens.split()
 
 def validCommandCall(command: str):
-    None
+    """Funcion que recibe un string con el comando separado por : de los atributos que recibe.
+    Retorna True si los atributos corresponden a los que deberia recibir, retorna False de lo contrario"""
+    commandStr = command.replace(" ", "") 
+    listCommand = commandStr.split(":")
+
+    commandType = listCommand[0]
+    listAtributes = listCommand[1].split(",")
+    
+    # Para los verificar si los TwoParametersCommands reciben los parametros correctos en cualquier caso 
+    if (commandType == "TwoParametersCommand(n,X)"):
+      if ("n(" in listAtributes[0]) and (listAtributes[1] == "X"):
+        return True
+      else:
+        return False
+    
+    if (commandType == "TwoParametersCommand(n,O)"):
+      if ("n(" in listAtributes[0]) and (listAtributes[1] == "O"):
+        return True
+      else:
+        return False
+
+    if (commandType == "TwoParametersCommand(n,n)"):
+      if ("n(" in listAtributes[0]) and ("n(" in listAtributes[1]):
+        return True
+      else:
+        return False
+    
+    if (commandType == "TwoParametersCommand(#,n)"):
+      if (listAtributes[0] == "#") and ("n(" in listAtributes[1]):
+        return True
+      else:
+        return False
+
+    if (commandType == "TwoParametersCommand(n,D)"):
+      if ("n(" in listAtributes[0]) and (listAtributes[1] == "D"):
+        return True
+      else:
+        return False
+
+    # Para verificar que los SingleParameterCommands reciban el parametro correcto en cualquier caso
+    if (commandType == "SingleParameterCommand(n)"):
+      if ("n(" in listAtributes[0]):
+        return True
+      else:
+        return False
+    
+    if (commandType == "SingleParameterCommand(O)"):
+      if (listAtributes[0] == "O"):
+        return True
+      else:
+        return False
+
+    if (commandType == "SingleParameterCommand(D)"):
+      if (listAtributes[0] == "D"):
+        return True
+      else:
+        return False
+    
 
 def posicionPROCS(cadenaTokenizada: str):
     listTokens = cadenaTokenizada.split()
@@ -86,7 +143,7 @@ def pasarFuncionesaString(cadenaTokenizada: str):
 
     return (funciones) 
      
-     
+
 def validPROCS(cadenaTokenizada: str):
     listTokens = cadenaTokenizada.split()
     posicionesFunciones = posicionPROCS(cadenaTokenizada)[1]
