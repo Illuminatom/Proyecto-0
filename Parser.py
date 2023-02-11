@@ -1,8 +1,57 @@
 import Lexer
 
-archivoTokens = "ROBOT_R VARS n(nom) , n(x) , n(y) , n(one) ; PROCS F(putcb) [ | n(c) , n(b) | TwoParametersCommand(#,n) : # , n(one) ; TwoParametersCommand(n,X) : n(c) , X ; TwoParametersCommand(n,X) : n(b) , X ] F(gonorth) [ | | WHILE : TwoParametersCondition(n,O) : # , D DO : [ TwoParametersCommand(n,D) : # , D ] ] F(gowest) [ | | IF : TwoParametersCondition(n,D) : # , D THEN : [ TwoParametersCommand(n,D) : # , D ] ELSE : nop : ] [ TwoParametersCommand(n,n) : # , # F(putcb) : # , # ]"
+archivoTokens = Lexer.lexer("archivo")
 
 archivoTokensLista = archivoTokens.split()
+
+def validarWhile(condition: str):
+    None
+
+def validarIf(condition: str):
+    None
+
+def validConditionCall(condition: str):
+    conditionStr = condition.replace(" ", "")
+    listCondition = conditionStr.split(":")
+
+    if (len(listCondition) != 2):
+      return False
+    
+    conditionType = listCondition[0]
+    listAtributes = listCondition[1].split(",")
+
+    if (conditionType == "TwoParametersCondition(n,X)"):
+      if ("n(" in listAtributes[0]) and (listAtributes[1] == "X"):
+        return True
+      else:
+        return False
+  
+    if (conditionType == "TwoParametersCondition(n,D)"):
+      if ("n(" in listAtributes[0]) and (listAtributes[1] == "D"):
+        return True
+      else:
+        return False
+
+    if (conditionType == "TwoParametersCondition(n,O)"):
+      if ("n(" in listAtributes[0]) and (listAtributes[1] == "O"):
+        return True
+      else:
+        return False
+
+    
+    if (conditionType == "SingleParameterCondition(D)"):
+      if(listAtributes[0] == "D"):
+        return True
+      else:
+        return False
+    
+    if (conditionType == "SingleParameterCondition(cond)"):
+      if("TwoParametersCondition(" in listAtributes[0]) or ("SingleParameterCondition(" in listAtributes[0]):
+        return True
+      else:
+        return False
+    
+
 
 def validCommandCall(command: str):
     """Funcion que recibe un string con el comando separado por : de los atributos que recibe.
@@ -66,6 +115,46 @@ def validCommandCall(command: str):
       else:
         return False
     
+
+def verificarPROCS(str): 
+  firstLoc = None
+  secLoc = None
+  i = 0
+  while (firstLoc == None or secLoc == None) and i <= len(str):
+    for char in range(0,len(str)):
+        if str[char] == "|" and firstLoc == None:
+          firstLoc = char
+        elif str[char] == "|" and firstLoc != None and secLoc == None:
+          secLoc = char
+        i+=1
+  if firstLoc == 0 and secLoc == 0:
+    return False
+  else:
+    vars = str[firstLoc+1:secLoc]
+    fVars = vars.split(",")
+    cont = 0
+    for each in fVars:
+      if ("n" in each or "#" in each or "X" in each) and (cont < len(fVars)):
+        cont +=1
+    
+    if cont == len(fVars):
+        return True
+    else:
+        return False
+
+def extraerProcedimientos(str):
+    firstLoc = None
+    secLoc = None
+    i = 0
+    while (firstLoc == None or secLoc == None) and i <= len(str):
+      for char in range(0,len(str)):
+          if str[char] == "|" and firstLoc == None:
+            firstLoc = char
+          elif str[char] == "|" and firstLoc != None and secLoc == None:
+            secLoc = char
+          i+=1
+    strComSlice = str[secLoc+1:-1] #CADENA RESTANTE SIN | DE VARIABLES
+    return strComSlice
 
 def posicionPROCS(cadenaTokenizada: str):
     listTokens = cadenaTokenizada.split()
@@ -153,7 +242,30 @@ def validPROCS(cadenaTokenizada: str):
 
     if listTokens[posicionesFunciones[0]-1] != "PROCS":
       return False
+    
+    funciones = pasarFuncionesaString(cadenaTokenizada)
 
+    for funcion in funciones:
+      variables = verificarPROCS(funcion)
+      commands = extraerProcedimientos(funcion).split(";")
+      commandsBool = True
+      for command in commands:
+        if ("WHILE" in command):
+          if(validarWhile(command) == False):
+            commandsBool = False
+        
+        elif ("IF" in command):
+          if(validarIf(command) == False):
+            commandsBool = False
+        
+        else:
+          if(validCommandCall(command) == False):
+            commandsBool = False
+
+      if (variables == False) or (commandsBool == False):
+        return False
+    
+    return True
     
 
 def validarVariables(cadena: str):
@@ -161,7 +273,7 @@ def validarVariables(cadena: str):
     retorno = True
 
     for var in listaVariables:
-      if ("n(" in var):                # Si el token que representa las variables no es n o #, las variables estan mal
+      if ("n(" not in var):                # Si el token que representa las variables no es n o #, las variables estan mal
         if (var != "#"):               # declaradas
           retorno = False
   
@@ -254,5 +366,8 @@ def parser(archivoTokenizado: str):
     else:
       print("El programa presenta alguna inconcistencia en el inicio")
 
+    if (validPROCS(archivoTokenizado) == True):
+      print("El programa tiene una declaracion de procedimientos correcta")
+    else: 
+      print("El programa presenta errores en la declaracion de los procedimientos")
 
-print(parser(archivoTokens))

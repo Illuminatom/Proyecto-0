@@ -182,13 +182,10 @@ def lexer(archivo: str):
     convertirATokens(listPalabras, listTokens,listaPROCS)
     strTokens = " ".join(listTokens)
 
-
-    print(strTokens)
-    print(listaPROCS)
     lexertxt = open(archivo + "_lexer{0}.txt".format(random.randint(0, 1000)), "x")
 
     lexertxt.write(strTokens)
-
+    
     lexertxt.close()
 
-lexer("archivo")
+    return strTokens
