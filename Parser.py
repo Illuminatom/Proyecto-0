@@ -10,9 +10,12 @@ def validCommandCall(command: str):
     commandStr = command.replace(" ", "") 
     listCommand = commandStr.split(":")
 
+    if (len(listCommand) != 2):
+      return False
+
     commandType = listCommand[0]
     listAtributes = listCommand[1].split(",")
-    
+
     # Para los verificar si los TwoParametersCommands reciben los parametros correctos en cualquier caso 
     if (commandType == "TwoParametersCommand(n,X)"):
       if ("n(" in listAtributes[0]) and (listAtributes[1] == "X"):
